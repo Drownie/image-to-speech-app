@@ -10,9 +10,15 @@
   },
   "dependencies": {
     "expo": "~48.0.10",
+    "expo-image-picker": "^14.1.1",
+    "expo-speech": "~11.1.1",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
-    "react-native": "0.71.6"
+    "react-dom": "^18.2.0",
+    "react-native": "0.71.6",
+    "react-native-vision-camera": "^2.15.4",
+    "react-native-web": "~0.18.11",
+    "tesseract.js": "^4.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
