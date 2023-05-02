@@ -23,6 +23,8 @@ export default function App() {
   const [text, setText] = useState('');
   const [insertTextState, setInsertTextState] = useState(false);
   const [informationState, setInformationState] = useState(false);
+  const [settingState, setSettingState] = useState(false);
+  const [speechCommand, setSpeechCommand] = useState(null);
 
   useEffect(() => {
     Camera.requestCameraPermissionsAsync()
@@ -35,6 +37,29 @@ export default function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (speechCommand !== null) {
+      if (speechCommand === "snap_picture") {
+        triggerCameraActive();
+
+        setTimeout(() => {
+          console.log("good");
+          setCameraActive(false);
+        }, 3000);
+      } else if (speechCommand === "cancel") {
+        cancelCapturedPict();
+      } else if (speechCommand === "convert_to_speech") {
+        console.log("Transoforming text");
+        transformText();
+      } else {
+        console.log("Extracting text");
+        // triggerExtract();
+      }
+      console.log(speechCommand);
+      setSpeechCommand(null);
+    }
+  }, [speechCommand])
+
   const triggerMenuButton = () => {
     // console.log(FileSystem.documentDirectory, "menu function");
     setMenuTrigger(!menuTrigger);
@@ -42,11 +67,12 @@ export default function App() {
 
   const trigerAudioButton = () => {
     if (!audioTrigger) {
-      StartRecording(setRecording);
+      StartRecording(setRecording, setAudioTrigger);
     } else {
-      StopRecording(recording, setRecording);
+      StopRecording(recording, setRecording, setAudioTrigger, setSpeechCommand);
     }
-    setAudioTrigger(!audioTrigger);
+    // console.log("audio triggered");
+    // setAudioTrigger(!audioTrigger);
   }
 
   const triggerInsertText = () => {
@@ -62,6 +88,9 @@ export default function App() {
     }
     if (previewVisible) {
       cancelCapturedPict();
+    }
+    if (settingState) {
+      setSettingState(false);
     }
     setInsertTextState(!insertTextState);
   }
@@ -96,6 +125,9 @@ export default function App() {
     if (previewVisible) {
       cancelCapturedPict();
     }
+    if (settingState) {
+      setSettingState(false);
+    }
     setCameraActive(!cameraActive);
   }
 
@@ -113,7 +145,32 @@ export default function App() {
     if (previewVisible) {
       cancelCapturedPict();
     }
+    if (settingState) {
+      setSettingState(false);
+    }
+
     setInformationState(!informationState);
+  }
+
+  const triggerSetting = () => {
+    if (audioTrigger) {
+      // Recording is on so turn off
+      trigerAudioButton()
+    }
+    if (cameraActive) {
+      triggerCameraActive();
+    }
+    if (insertTextState) {
+      setInsertTextState(false);
+    }
+    if (previewVisible) {
+      cancelCapturedPict();
+    }
+    if (informationState) {
+      setInformationState(false);
+    }
+    
+    setSettingState(!settingState);
   }
 
   const transformText = () => {
@@ -152,6 +209,8 @@ export default function App() {
         inserTextOptionState={insertTextState}
         informationOption={triggerInformation}
         informationOptionState={informationState}
+        settingOption={triggerSetting}
+        settingOptionState={settingState}
         textValue={text}
         updateText={setText}
         triggerExtract={triggerExtract}
@@ -160,7 +219,7 @@ export default function App() {
       <ButtonNav 
         trigger={triggerMenuButton} 
         triggerStats={menuTrigger}
-        AuioState={audioTrigger}
+        AudioState={audioTrigger}
         triggerAudio={trigerAudioButton}
         cameraActiveState={cameraActive}
         triggerCamera={takePicture} />

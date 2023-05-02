@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Camera, CameraType } from 'expo-camera';
 
-export function CameraMod ({windowSize, cameraPermission, cameraActiveState, updateCameraRef}) {
+export function CameraMod ({cameraPermission, cameraActiveState, updateCameraRef}) {
     if (!cameraPermission) {
-        return <Text style={styles.alertContainer(windowSize)}>No Access To Camera</Text>;
+        return <Text style={styles.alertContainer}>No Access To Camera</Text>;
     }
     if (cameraActiveState & cameraPermission) {
         return (
@@ -23,16 +23,18 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
     },
-    alertContainer: (window) => ({
+    alertContainer: {
         marginTop: '15%',
         display: 'flex',
-        width: (window * .8) >= 200 ? 200 : (window * .8),
-        height: (window * .8) >= 100 ? 100 : (window * .8),
+        width: '80%',
+        maxWidth: 200,
+        height: '80%',
+        maxHeight: 100,
         color: '#FFF',
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 12,
         backgroundColor: '#3E3E3E',
         opacity: .7,
-    })
+    }
 });

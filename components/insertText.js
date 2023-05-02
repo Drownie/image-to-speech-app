@@ -2,10 +2,10 @@ import { StyleSheet, View, TextInput, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 
-export function InsertText({closeModal, modalOpened, windowSize, updateText, textValue, transformText}) {
+export function InsertText({closeModal, modalOpened, updateText, textValue, transformText}) {
 
     return (
-        <View style={styles.container(windowSize, modalOpened)}>
+        <View style={styles.container(modalOpened)}>
             <TextInput 
                 style={styles.textContainer}
                 placeholder="Insert text here ..."
@@ -35,12 +35,17 @@ export function InsertText({closeModal, modalOpened, windowSize, updateText, tex
 }
 
 const styles = StyleSheet.create({
-    container: (window, isDisplayed) => ({
+    container: (isDisplayed) => ({
         display: isDisplayed ? 'flex' : 'none',
         position: 'relative',
-        width: (window * .8) >= 250 ? 250 : (window * .8),
-        height: (window * .8) >= 300 ? 300 : (window * .8),
-        padding: ((window * .8) >= 250 ? 250 : (window * .8)) * .08,
+        width: '80%',
+        maxWidth: 250,
+        height: '80%',
+        maxHeight: 350,
+        padding: 20,
+        // width: (window * .8) >= 250 ? 250 : (window * .8),
+        // height: (window * .8) >= 300 ? 300 : (window * .8),
+        // padding: ((window * .8) >= 250 ? 250 : (window * .8)) * .08,
         marginTop: '10%',
         flexDirection: 'row',
         flexWrap: 'wrap',

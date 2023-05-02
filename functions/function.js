@@ -61,7 +61,7 @@ const SynthesisSpeech = (text) => {
     });
 }
 
-const RecontIntentAndroid = async (uri) => {
+const RecontIntentAndroid = async (uri, setCommand) => {
     const formData = new FormData();
     formData.append('file', {
         uri,
@@ -84,7 +84,7 @@ const RecontIntentAndroid = async (uri) => {
     }
 }
 
-const ReconIntentWeb = async (uri) => {
+const ReconIntentWeb = async (uri, setCommand) => {
     const response = await fetch(uri);
     const formData = new FormData();
     const blob = await response.blob();
@@ -97,7 +97,8 @@ const ReconIntentWeb = async (uri) => {
             formData,
             {headers}
         ).then(response => {
-            console.log(response);
+            console.log(response.data.result.name);
+            setCommand(response.data.result.name);
         }).catch(e => {
             console.log(e);
         })
@@ -106,7 +107,7 @@ const ReconIntentWeb = async (uri) => {
     }
 }
 
-const StartRecording = async (setRecording) => {
+const StartRecording = async (setRecording, triggerAudio) => {
     try {
         const { status } = await Audio.requestPermissionsAsync();
         if (status === 'granted') {
@@ -114,14 +115,9 @@ const StartRecording = async (setRecording) => {
             await recording.prepareToRecordAsync( recordingOptions );
             await recording.startAsync();
             setRecording(recording);
-            // await Audio.setAudioModeAsync({
-            //     allowsRecordingIOS: true,
-            //     playsInSilentModeIOS: true
-            // });
         
             console.log("Start Recording ...");
-            // const { recording } = await Audio.Recording.createAsync( recordingOptions );
-            // setRecording(recording);
+            triggerAudio(true);
             console.log("Recording Started")
         } else {
             console.log('Permission to record audio denied');
@@ -131,10 +127,11 @@ const StartRecording = async (setRecording) => {
     }
 }
 
-const StopRecording = async (recording, reset) => {
+const StopRecording = async (recording, reset, triggerAudio, setSpeechCommand) => {
     console.log("Stop Recording...");
     reset(undefined);
     await recording.stopAndUnloadAsync();
+    triggerAudio(false);
     await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
     });
@@ -149,9 +146,9 @@ const StopRecording = async (recording, reset) => {
         //   to: convertedUri,
         // });
         // console.log('Converted URI:', convertedUri);
-        RecontIntentAndroid(uri);
+        RecontIntentAndroid(uri, setSpeechCommand);
     } else if (Platform.OS === "web") {
-        ReconIntentWeb(uri);
+        ReconIntentWeb(uri, setSpeechCommand);
     }
     // const wavFileUri = `${FileSystem.cacheDirectory}recording.wav`;
     // await sound.exportAsync({ uri: wavFileUri, format: Audio.AndroidOutputFormat. })

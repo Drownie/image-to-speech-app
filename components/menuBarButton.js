@@ -1,22 +1,24 @@
-import { StyleSheet, Pressable } from "react-native";
+import { StyleSheet, Pressable, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign"
 
-export function MenuBarButton({dimension, iconName, onButtonPress, onButtonPressOut, buttonPressed}) {
+export function MenuBarButton({dimension, iconName, onButtonPress, onButtonPressOut, buttonPressed, buttonText}) {
     return (
         <Pressable style={styles.button(dimension)} onPress={onButtonPress} onPressOut={onButtonPressOut}>
             {!buttonPressed ? 
                 <Icon 
                     name={iconName}
-                    size={dimension * .38 * .40}
+                    size={28}
                     color='#FFF'
-                /> :
+                /> 
+                :
                 <AntDesign 
                     name={"back"}
-                    size={dimension * .38 * .40}
+                    size={28}
                     color='#FFF'
                 />
             }
+            
         </Pressable>
     );
 }
@@ -30,5 +32,5 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         opacity: .7,
         borderRadius: 12,
-    }),
+    })
 });

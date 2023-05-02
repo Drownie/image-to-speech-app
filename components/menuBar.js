@@ -2,7 +2,7 @@ import { StyleSheet, View, Dimensions, Pressable } from "react-native";
 import { MenuBarButton } from "./menuBarButton";
 import Icon from "react-native-vector-icons/AntDesign";
 
-export function MenuBar({closeModal, windowSize, cameraOption, cameraActiveState, insertTextOption, insertTextOptionState, informationOption, informationOptionState}) {
+export function MenuBar({closeModal, windowSize, cameraOption, cameraActiveState, insertTextOption, insertTextOptionState, informationOption, informationOptionState, settingOption, settingOptionState}) {
 
     return (
         <View style={styles.container(windowSize)}>
@@ -15,6 +15,7 @@ export function MenuBar({closeModal, windowSize, cameraOption, cameraActiveState
             </Pressable>
             <MenuBarButton dimension={(windowSize * .8) > 200 ? 200 : (windowSize * .8)} iconName={"camera"} onButtonPress={cameraOption} onButtonPressOut={closeModal} buttonPressed={cameraActiveState} />
             <MenuBarButton dimension={(windowSize * .8) > 200 ? 200 : (windowSize * .8)} iconName={"pencil-square-o"} onButtonPress={insertTextOption} onButtonPressOut={closeModal} buttonPressed={insertTextOptionState} />
+            <MenuBarButton dimension={(windowSize * .8) > 200 ? 200 : (windowSize * .8)} iconName={"gear"} onButtonPress={settingOption} onButtonPressOut={closeModal} buttonPressed={settingOptionState} />
             <MenuBarButton dimension={(windowSize * .8) > 200 ? 200 : (windowSize * .8)} iconName={"info"} onButtonPress={informationOption} onButtonPressOut={closeModal} buttonPressed={informationOptionState} />
         </View>
     );
@@ -27,7 +28,6 @@ const styles = StyleSheet.create({
         height: (window * .8) >= 200 ? 200 : (window * .8),
         padding: ((window * .8) >= 200 ? 200 : (window * .8)) * .08,
         marginTop: '15%',
-        marginLeft: (window * .5) - (((window * .8) >= 200 ? 200 : (window * .8)) * .5),
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',

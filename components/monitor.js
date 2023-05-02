@@ -6,8 +6,9 @@ import { MenuBar } from "./menuBar";
 import { InsertText } from "./insertText";
 import { Information } from "./information";
 import { CameraMod } from "./cameraMod";
+import { Setting } from "./setting";
 
-export function Monitor({menuState, menuTrigger, windowSize, cameraOption, cameraActiveState, insertTextOption, inserTextOptionState, textValue, updateText, transformText, informationOption, informationOptionState, cameraRef, cameraPermission, previewVisible, capturedImage, triggerExtract, cancelCapturedPict}) {    
+export function Monitor({windowSize, menuState, menuTrigger, cameraOption, cameraActiveState, insertTextOption, inserTextOptionState, textValue, updateText, transformText, informationOption, informationOptionState, cameraRef, cameraPermission, previewVisible, capturedImage, triggerExtract, cancelCapturedPict, settingOption, settingOptionState}) {    
     const CameraPreview = ({photo, cancelPict, extract}) => {
         return (
             <View style={styles.capturedContainer}>
@@ -44,21 +45,24 @@ export function Monitor({menuState, menuTrigger, windowSize, cameraOption, camer
                 transparent={true}
                 onRequestClose={menuTrigger}
                 >
-                    <MenuBar 
-                        closeModal={menuTrigger} 
-                        windowSize={windowSize} 
-                        cameraOption={cameraOption} 
-                        cameraActiveState={cameraActiveState}
-                        insertTextOption={insertTextOption} 
-                        insertTextOptionState={inserTextOptionState}
-                        informationOption={informationOption}
-                        informationOptionState={informationOptionState}
-                    />
+                    <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <MenuBar 
+                            closeModal={menuTrigger} 
+                            windowSize={windowSize} 
+                            cameraOption={cameraOption} 
+                            cameraActiveState={cameraActiveState}
+                            insertTextOption={insertTextOption} 
+                            insertTextOptionState={inserTextOptionState}
+                            informationOption={informationOption}
+                            informationOptionState={informationOptionState}
+                            settingOption={settingOption}
+                            settingOptionState={settingOptionState}
+                        />
+                    </View>
             </Modal>
             <InsertText 
                 closeModal={insertTextOption}
                 modalOpened={inserTextOptionState} 
-                windowSize={windowSize} 
                 updateText={updateText}
                 textValue={textValue}
                 transformText={transformText}
@@ -66,7 +70,10 @@ export function Monitor({menuState, menuTrigger, windowSize, cameraOption, camer
             <Information 
                 closeModal={informationOption}
                 modalOpened={informationOptionState} 
-                windowSize={windowSize} 
+            />
+            <Setting 
+                closeModal={settingOption}
+                modalOpened={settingOptionState}
             />
             {previewVisible ?
             <CameraPreview 
@@ -76,7 +83,6 @@ export function Monitor({menuState, menuTrigger, windowSize, cameraOption, camer
             /> 
             :
             <CameraMod 
-                windowSize={windowSize}
                 cameraPermission={cameraPermission}
                 cameraActiveState={cameraActiveState}
                 updateCameraRef={cameraRef}

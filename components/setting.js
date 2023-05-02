@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Octicons from "react-native-vector-icons/Octicons";
 
-export function Information({closeModal, modalOpened}) {
+export function Setting({closeModal, modalOpened}) {
 
     return (
         <View style={styles.container(modalOpened)}>
@@ -14,12 +14,12 @@ export function Information({closeModal, modalOpened}) {
                 />
             </Pressable>
             <View style={styles.header}>
-                <Octicons 
-                    name="info"
+                <Icon 
+                    name="setting"
                     size={22}
                     color={'#FFF'}
                 />
-                <Text style={styles.headerTitle}>Information</Text>
+                <Text style={styles.headerTitle}>Setting</Text>
             </View>
             <View style={styles.content}>
                 <Text style={styles.contentText}>The Image-to-Speech app was developed specifically to aid individuals with visual impairments. The application was created as part of a thesis project and designed by Abraham Mahanaim CSE19.</Text>
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         width: '80%',
         maxWidth: 240,
         height: '80%',
-        maxHeight: 240,
+        maxHeight: 300,
         padding: 16,
         marginTop: '10%',
         flexDirection: 'column',
