@@ -31,24 +31,55 @@ const recordingOptions = {
     },    
 };
 
-const BACKEND_ENDPOINT = 'http://192.168.0.184:3000/'
-const API_ENDPOINT = "https://api.wit.ai/speech";
-const WIT_ACCESS_TOKEN = "ANE6FUPJ7BIJSRKF3GRTWBPLM3W7IR5V";
-const OPTIC_API_KEY = "CTxtWQHXnLXYCk4BnweFxgwoqzuitx4F9dKLAg4axvzq"
-// , 'Authorization': `Bearer ${WIT_ACCESS_TOKEN}`
+let BACKEND_ENDPOINT = 'http://192.168.0.184:3000/';
 const headers = {'Content-Type': 'multipart/form-data'};
+let KEY = 3;
 
-const ExtractText = async (imageInput) => {
-    console.log(imageInput);
-    // await Tesseract.recognize(
-    //   imageInput, 
-    //   'eng', 
-    //   { logger: m => console.log(m) }
-    //   ).then(({ data: { text, confidence } }) => {
-    //     console.log(text);
-    //     console.log(confidence);
-    //     // SynthesisSpeech("Extraction Finished");
-    //   });
+const UpdateHost = (newHost) => {
+    BACKEND_ENDPOINT = newHost;
+}
+
+const PingHost = () => {
+    try {
+        console.log(`Ping @ ${BACKEND_ENDPOINT}`);
+        axios.get(
+            BACKEND_ENDPOINT + 'key/'
+        ).then(result => {
+            KEY = result.data.result;
+            console.log(KEY);
+        }).catch(err => {
+            console.log('Error :', err);
+        })
+    } catch(err) {
+        console.log('Error :', err);
+    }
+}
+
+const ExtractText = async (imageInput, updateState, setText) => {
+    // const response = await fetch(imageInput);
+    // const blob = await response.blob();
+    const formData = new FormData();
+    formData.append('file', {
+        uri: imageInput,
+        name: 'image',
+        type: 'image/jpeg'
+    })
+    // formData.append('file', blob, 'image')
+    try {
+        axios.post(
+            BACKEND_ENDPOINT + 'extract/'+ KEY,
+            formData,
+            {headers}
+        ).then(response => {
+            updateState(true);
+            setText(response.data.result);
+            // console.log("r", response.data.result);
+        }).catch(e => {
+            console.log(e);
+        })
+    } catch(err) {
+        console.log(err);
+    }
 };
 
 const SynthesisSpeech = (text) => {
@@ -71,11 +102,12 @@ const RecontIntentAndroid = async (uri, setCommand) => {
 
     try {
         axios.post(
-            BACKEND_ENDPOINT + 'recon/3',
+            BACKEND_ENDPOINT + 'recon/' + KEY,
             formData,
             {headers}
         ).then(response => {
-            console.log(response);
+            console.log(response.data.result);
+            setCommand(response.data.result.name);
         }).catch(e => {
             console.log(e);
         })
@@ -90,10 +122,10 @@ const ReconIntentWeb = async (uri, setCommand) => {
     const blob = await response.blob();
     formData.append('file', blob, 'audio.webm');
 
-    console.log(formData);
+    // console.log(formData);
     try {
         axios.post(
-            BACKEND_ENDPOINT + 'recon/3',
+            BACKEND_ENDPOINT + 'recon/'+ KEY,
             formData,
             {headers}
         ).then(response => {
@@ -129,7 +161,6 @@ const StartRecording = async (setRecording, triggerAudio) => {
 
 const StopRecording = async (recording, reset, triggerAudio, setSpeechCommand) => {
     console.log("Stop Recording...");
-    reset(undefined);
     await recording.stopAndUnloadAsync();
     triggerAudio(false);
     await Audio.setAudioModeAsync({
@@ -137,23 +168,15 @@ const StopRecording = async (recording, reset, triggerAudio, setSpeechCommand) =
     });
 
     const uri = recording.getURI();
+    
+    reset(undefined);
 
     if (Platform.OS === "android") {
-        // const fileInfo = await FileSystem.getInfoAsync(uri);
-        // const convertedUri = `${FileSystem.documentDirectory}audio.wav`;
-        // await FileSystem.copyAsync({
-        //   from: fileInfo.uri,
-        //   to: convertedUri,
-        // });
-        // console.log('Converted URI:', convertedUri);
         RecontIntentAndroid(uri, setSpeechCommand);
     } else if (Platform.OS === "web") {
         ReconIntentWeb(uri, setSpeechCommand);
     }
-    // const wavFileUri = `${FileSystem.cacheDirectory}recording.wav`;
-    // await sound.exportAsync({ uri: wavFileUri, format: Audio.AndroidOutputFormat. })
-
-    console.log('Recording stopped and stored at', uri);
+    // console.log('Recording stopped and stored at', uri);
 }
 
-export { StartRecording, StopRecording, SynthesisSpeech, ExtractText };
+export { StartRecording, StopRecording, SynthesisSpeech, ExtractText, UpdateHost, PingHost };

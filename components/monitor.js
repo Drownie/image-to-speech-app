@@ -1,6 +1,7 @@
 import { View, StyleSheet, Modal, Image, Pressable, Text } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 
 import { MenuBar } from "./menuBar";
 import { InsertText } from "./insertText";
@@ -8,14 +9,15 @@ import { Information } from "./information";
 import { CameraMod } from "./cameraMod";
 import { Setting } from "./setting";
 
-export function Monitor({windowSize, menuState, menuTrigger, cameraOption, cameraActiveState, insertTextOption, inserTextOptionState, textValue, updateText, transformText, informationOption, informationOptionState, cameraRef, cameraPermission, previewVisible, capturedImage, triggerExtract, cancelCapturedPict, settingOption, settingOptionState}) {    
-    const CameraPreview = ({photo, cancelPict, extract}) => {
+export function Monitor({windowSize, menuState, menuTrigger, cameraOption, cameraActiveState, insertTextOption, inserTextOptionState, textValue, updateText, transformText, informationOption, informationOptionState, cameraRef, cameraPermission, previewVisible, capturedImage, triggerExtract, cancelCapturedPict, settingOption, settingOptionState, updateHost, hostAddr, triggerPing, extractedTextState}) {    
+    const CameraPreview = ({photo, cancelPict, extract, extractedTextState, textValue, transformText}) => {
         return (
             <View style={styles.capturedContainer}>
                 <Image 
                     source={{uri: photo}} 
-                    style={styles.capturedImage}
+                    style={styles.capturedImage(extractedTextState)}
                 />
+                <Text style={styles.transformedText(extractedTextState)}>{textValue}</Text>
                 <View style={styles.buttonContainer}>
                     <Pressable style={styles.button} onPress={cancelPict}>
                         <Icon 
@@ -25,6 +27,8 @@ export function Monitor({windowSize, menuState, menuTrigger, cameraOption, camer
                         />
                         <Text style={styles.buttonText}>Cancel</Text>
                     </Pressable>
+
+                    {!extractedTextState ? 
                     <Pressable style={styles.button} onPress={extract}>
                         <MaterialCommunityIcons 
                             name="card-text-outline"
@@ -33,6 +37,16 @@ export function Monitor({windowSize, menuState, menuTrigger, cameraOption, camer
                         />
                         <Text style={styles.buttonText}>Extract</Text>
                     </Pressable>
+                    :
+                    <Pressable style={styles.button} onPress={transformText}>
+                        <Entypo 
+                            name="megaphone"
+                            size={30}
+                            color={'#FFF'}
+                        />
+                        <Text style={styles.buttonText}>Transform</Text>
+                    </Pressable>
+                    }
                 </View>
             </View>
         );
@@ -74,12 +88,18 @@ export function Monitor({windowSize, menuState, menuTrigger, cameraOption, camer
             <Setting 
                 closeModal={settingOption}
                 modalOpened={settingOptionState}
+                hostAddr={hostAddr}
+                updateHost={updateHost}
+                triggerPing={triggerPing}
             />
             {previewVisible ?
             <CameraPreview 
                 photo={capturedImage}
                 cancelPict={cancelCapturedPict}
                 extract={triggerExtract}
+                textValue={textValue}
+                extractedTextState={extractedTextState}
+                transformText={transformText}
             /> 
             :
             <CameraMod 
@@ -90,7 +110,6 @@ export function Monitor({windowSize, menuState, menuTrigger, cameraOption, camer
         </View>
     );
 }
-// {/* {trigger ? <MenuBar /> : <Text style={styles.textContainer}>{test}</Text>} */}
 
 const styles = StyleSheet.create({
     container: {
@@ -123,15 +142,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    capturedImage: {
-        flex: .70,
+    capturedImage: (extracted) => ({
+        flex: !extracted ? .70 : .55,
         width: 300,
         height: 500,
         maxWidth: '75%',
         maxHeight: '80%',
         resizeMode: 'cover',
         borderRadius: 12,
-    },
+    }),
+    transformedText: (extracted) => ({
+        display: !extracted ? 'none' : 'flex',
+        flex: .15,
+        width: 300,
+        maxWidth: 300,
+        maxHeight: '15%',
+        marginTop: 10,
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 20,
+        overflow: 'scroll',
+        textAlign: 'justify',
+        flexWrap: 'wrap',
+    }),
     buttonContainer: {
         flex: .15,
         width: 300,

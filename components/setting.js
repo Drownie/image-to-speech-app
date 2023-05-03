@@ -1,8 +1,8 @@
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-import Octicons from "react-native-vector-icons/Octicons";
+import Feather from "react-native-vector-icons/Feather";
 
-export function Setting({closeModal, modalOpened}) {
+export function Setting({closeModal, modalOpened, hostAddr, updateHost, triggerPing}) {
 
     return (
         <View style={styles.container(modalOpened)}>
@@ -22,8 +22,24 @@ export function Setting({closeModal, modalOpened}) {
                 <Text style={styles.headerTitle}>Setting</Text>
             </View>
             <View style={styles.content}>
-                <Text style={styles.contentText}>The Image-to-Speech app was developed specifically to aid individuals with visual impairments. The application was created as part of a thesis project and designed by Abraham Mahanaim CSE19.</Text>
-                <Text style={styles.appVersion}>Ver 1.0</Text>
+                <View style={styles.contentRow}>
+                    <Pressable style={styles.pingButton} onPress={triggerPing}>
+                        <Feather 
+                            name="bell"
+                            size={25}
+                            color={'#000'}
+                        />
+                    </Pressable>
+                </View>
+                <View style={styles.contentRow}>
+                    <Text style={styles.textLabel}>Host</Text>
+                    <TextInput 
+                        style={styles.textInput}
+                        placeholder="Insert Host..."
+                        onChangeText={updateHost}
+                        value={hostAddr}
+                    />
+                </View>
             </View>
         </View>
     );
@@ -77,19 +93,35 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         padding: '5%',
     },
-    contentText: {
-        flex: .85,
-        color: '#FFF',
-        textAlign: 'justify',
-        overflow: 'scroll',
+    pingButton: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFF',
+        borderRadius: 25,
     },
-    appVersion: {
+    contentRow: {
+        flex: .2,
+        marginBottom: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-around'
+    },
+    textLabel: {
+        flex: .20,
+        color: '#FFF',
+        fontSize: 18,
         display: 'flex',
-        flex: .15,
-        color: '#FFF',
-        fontSize: 10,
-        textAlign: 'center',
-        justifyContent: "center",
-        alignItems: 'flex-end',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
+    textInput: {
+        flex: .65,
+        width: '65%',
+        height: '100%',
+        backgroundColor: '#FFF',
+        borderRadius: 25,
+        paddingHorizontal: 15,
+        fontSize: 15,
+    }
 });

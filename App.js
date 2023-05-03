@@ -7,7 +7,7 @@ import * as FileSystem from 'expo-file-system';
 import { ButtonNav } from './components/bottomNav';
 import { Monitor } from './components/monitor';
 
-import { StartRecording, StopRecording, SynthesisSpeech, ExtractText } from './functions/function';
+import { StartRecording, StopRecording, SynthesisSpeech, ExtractText, UpdateHost, PingHost } from './functions/function';
 
 export default function App() {
   const [menuTrigger, setMenuTrigger] = useState(false);
@@ -19,12 +19,13 @@ export default function App() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [recording, setRecording] = useState(null);
-  const [intent, setIntent] = useState("Welcome to \nThe Application");
   const [text, setText] = useState('');
+  const [extractedTextState, setExtractedTextState] = useState(false);
   const [insertTextState, setInsertTextState] = useState(false);
   const [informationState, setInformationState] = useState(false);
   const [settingState, setSettingState] = useState(false);
   const [speechCommand, setSpeechCommand] = useState(null);
+  const [hostAddr, setHostAddr] = useState('http://192.168.0.184:3000/');
 
   useEffect(() => {
     Camera.requestCameraPermissionsAsync()
@@ -35,6 +36,8 @@ export default function App() {
     if (curSize != windowSize){
       setWindowSize(curSize);
     }
+    UpdateHost(hostAddr);
+    PingHost();
   }, [])
 
   useEffect(() => {
@@ -44,7 +47,8 @@ export default function App() {
 
         setTimeout(() => {
           console.log("good");
-          setCameraActive(false);
+          takePicture();
+          // setCameraActive(false);
         }, 3000);
       } else if (speechCommand === "cancel") {
         cancelCapturedPict();
@@ -59,6 +63,10 @@ export default function App() {
       setSpeechCommand(null);
     }
   }, [speechCommand])
+
+  useEffect(() => {
+    UpdateHost(hostAddr);
+  }, [hostAddr])
 
   const triggerMenuButton = () => {
     // console.log(FileSystem.documentDirectory, "menu function");
@@ -187,10 +195,22 @@ export default function App() {
   const cancelCapturedPict = () => {
     setPreviewVisible(false);
     setCapturedImage(null);
+    setExtractedTextState(false);
+    setText('');
   }
 
   const triggerExtract = () => {
-    ExtractText(capturedImage);
+    if (capturedImage) {
+      ExtractText(capturedImage, setExtractedTextState, setText);
+      console.log("Extract Text");
+    } else {
+      console.log("Image is empty");
+      SynthesisSpeech("Image is empty");
+    }
+  }
+
+  const triggerPing = () => {
+    PingHost();
   }
 
   return (
@@ -212,10 +232,14 @@ export default function App() {
         settingOption={triggerSetting}
         settingOptionState={settingState}
         textValue={text}
+        extractedTextState={extractedTextState}
         updateText={setText}
         triggerExtract={triggerExtract}
         cancelCapturedPict={cancelCapturedPict}
-        transformText={transformText} />
+        transformText={transformText}
+        hostAddr={hostAddr}
+        updateHost={setHostAddr}
+        triggerPing={triggerPing} />
       <ButtonNav 
         trigger={triggerMenuButton} 
         triggerStats={menuTrigger}
