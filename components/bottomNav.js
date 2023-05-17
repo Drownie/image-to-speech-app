@@ -4,13 +4,13 @@ import { CameraButton } from "./cameraButton";
 import { MenuButton } from "./menuButton";
 import { FolderButton } from "./folderButton";
 
-export function ButtonNav({trigger, triggerStats, AudioState, triggerAudio, cameraActiveState, triggerCamera}) {
+export function ButtonNav({triggerFolder,trigger, triggerStats, AudioState, triggerAudio, cameraActiveState, triggerCamera}) {
     return (
         <View style={styles.container}>
             <MenuButton openMenu={trigger} triggerStats={triggerStats} />
             {!cameraActiveState && <AudioButton openMenu={triggerAudio} triggerStats={AudioState} />}
             {cameraActiveState && <CameraButton openMenu={triggerCamera} />}
-            <FolderButton />
+            <FolderButton triggerFolder={triggerFolder} />
         </View>
     );
 }

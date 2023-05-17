@@ -1,7 +1,7 @@
 import { Audio } from "expo-av";
 import * as Speech from 'expo-speech';
-import { Platform } from "react-native";
-import * as FileSystem from 'expo-file-system';
+import { Platform, Alert } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 import { AndroidAudioEncoder, AndroidOutputFormat, IOSAudioQuality, IOSOutputFormat } from "expo-av/build/Audio";
 
@@ -32,11 +32,15 @@ const recordingOptions = {
 };
 
 let BACKEND_ENDPOINT = 'http://192.168.0.184:3000/';
+// 'https://172.16.1.80:3000/'
+// 'http://192.168.162.221:3000/'
+//'http://192.168.0.184:3000/' 
 const headers = {'Content-Type': 'multipart/form-data'};
 let KEY = 3;
 
 const UpdateHost = (newHost) => {
     BACKEND_ENDPOINT = newHost;
+    return;
 }
 
 const PingHost = () => {
@@ -46,25 +50,25 @@ const PingHost = () => {
             BACKEND_ENDPOINT + 'key/'
         ).then(result => {
             KEY = result.data.result;
-            console.log(KEY);
+            return;
         }).catch(err => {
-            console.log('Error :', err);
+            console.log('Error :', err.message);
+            return;
         })
     } catch(err) {
         console.log('Error :', err);
+        return;
     }
 }
 
-const ExtractText = async (imageInput, updateState, setText) => {
-    // const response = await fetch(imageInput);
-    // const blob = await response.blob();
+const ExtractText = async (imageInput, updateState, setText, speech_support) => {
     const formData = new FormData();
     formData.append('file', {
         uri: imageInput,
         name: 'image',
         type: 'image/jpeg'
     })
-    // formData.append('file', blob, 'image')
+
     try {
         axios.post(
             BACKEND_ENDPOINT + 'extract/'+ KEY,
@@ -73,12 +77,18 @@ const ExtractText = async (imageInput, updateState, setText) => {
         ).then(response => {
             updateState(true);
             setText(response.data.result);
-            // console.log("r", response.data.result);
+            if (speech_support) {
+                SynthesisSpeech("Text Extraction Finished");
+            }
+            return;
         }).catch(e => {
+            SynthesisSpeech("Text Extraction Error");
             console.log(e);
+            return;
         })
     } catch(err) {
         console.log(err);
+        return;
     }
 };
 
@@ -90,6 +100,7 @@ const SynthesisSpeech = (text) => {
         language: 'en',
         rate: .8,
     });
+    return;
 }
 
 const RecontIntentAndroid = async (uri, setCommand) => {
@@ -106,13 +117,18 @@ const RecontIntentAndroid = async (uri, setCommand) => {
             formData,
             {headers}
         ).then(response => {
-            console.log(response.data.result);
+            console.log(response.data);
             setCommand(response.data.result.name);
+            return;
         }).catch(e => {
             console.log(e);
+            setCommand("error");
+            return;
         })
     } catch(err) {
         console.log(err);
+        setCommand("error");
+        return;
     }
 }
 
@@ -122,20 +138,21 @@ const ReconIntentWeb = async (uri, setCommand) => {
     const blob = await response.blob();
     formData.append('file', blob, 'audio.webm');
 
-    // console.log(formData);
     try {
         axios.post(
             BACKEND_ENDPOINT + 'recon/'+ KEY,
             formData,
             {headers}
         ).then(response => {
-            console.log(response.data.result.name);
             setCommand(response.data.result.name);
+            return;
         }).catch(e => {
             console.log(e);
+            return;
         })
     } catch(err) {
         console.log(err);
+        return;
     }
 }
 
@@ -150,12 +167,15 @@ const StartRecording = async (setRecording, triggerAudio) => {
         
             console.log("Start Recording ...");
             triggerAudio(true);
-            console.log("Recording Started")
+            console.log("Recording Started");
+            return;
         } else {
             console.log('Permission to record audio denied');
+            return;
         }
     } catch(err) {
         console.error('Failed to start recording', err);
+        return;
     }
 }
 
@@ -176,7 +196,23 @@ const StopRecording = async (recording, reset, triggerAudio, setSpeechCommand) =
     } else if (Platform.OS === "web") {
         ReconIntentWeb(uri, setSpeechCommand);
     }
-    // console.log('Recording stopped and stored at', uri);
+    return;
 }
 
-export { StartRecording, StopRecording, SynthesisSpeech, ExtractText, UpdateHost, PingHost };
+const PickImage = async (setImage, setvisible) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+    });
+
+    if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        setvisible(true);
+    }
+    
+    return;
+}
+
+export { StartRecording, StopRecording, SynthesisSpeech, ExtractText, UpdateHost, PingHost, PickImage };

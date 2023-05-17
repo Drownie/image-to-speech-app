@@ -1,13 +1,13 @@
 import { StyleSheet, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-export function FolderButton() {
+export function FolderButton({triggerFolder}) {
     const test = () => {
         console.log("test folder");
     }
 
     return (
-        <Pressable style={styles.button} onPress={test}>
+        <Pressable style={styles.button} onPress={triggerFolder}>
             <Icon 
                 name="md-folder-open-outline"
                 size={22}

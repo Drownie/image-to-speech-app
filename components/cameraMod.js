@@ -3,7 +3,8 @@ import { Camera, CameraType } from 'expo-camera';
 
 export function CameraMod ({cameraPermission, cameraActiveState, updateCameraRef}) {
     if (!cameraPermission) {
-        return <Text style={styles.alertContainer}>No Access To Camera</Text>;
+        // return <Text style={styles.alertContainer}>No Access To Camera</Text>;
+        return <View />;
     }
     if (cameraActiveState & cameraPermission) {
         return (

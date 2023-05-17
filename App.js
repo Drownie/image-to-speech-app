@@ -1,13 +1,12 @@
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { Camera } from 'expo-camera';
-
-import * as FileSystem from 'expo-file-system';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 import { ButtonNav } from './components/bottomNav';
 import { Monitor } from './components/monitor';
 
-import { StartRecording, StopRecording, SynthesisSpeech, ExtractText, UpdateHost, PingHost } from './functions/function';
+import { StartRecording, StopRecording, SynthesisSpeech, ExtractText, UpdateHost, PingHost, PickImage } from './functions/function';
 
 export default function App() {
   const [menuTrigger, setMenuTrigger] = useState(false);
@@ -43,25 +42,32 @@ export default function App() {
   useEffect(() => {
     if (speechCommand !== null) {
       if (speechCommand === "snap_picture") {
-        triggerCameraActive();
+        if (hasCameraPermission) {
+          triggerCameraActive();
 
-        setTimeout(() => {
-          console.log("good");
-          takePicture();
-          // setCameraActive(false);
-        }, 3000);
+          setTimeout(() => {
+            takePicture();
+          }, 3000);
+        } else {
+          SynthesisSpeech("No Camera Permission");
+        }
       } else if (speechCommand === "cancel") {
         cancelCapturedPict();
       } else if (speechCommand === "convert_to_speech") {
         console.log("Transoforming text");
         transformText();
-      } else {
+      } else if (speechCommand === "extract_text") {
         console.log("Extracting text");
-        // triggerExtract();
+        SynthesisSpeech("Extracting text");
+        triggerExtract();
+      } else if (speechCommand === "error") {
+        SynthesisSpeech("Error");
+      } else {
+        console.log("Unknown Command");
+        SynthesisSpeech("Unknown Command");
       }
-      console.log(speechCommand);
       setSpeechCommand(null);
-    }
+    } 
   }, [speechCommand])
 
   useEffect(() => {
@@ -69,7 +75,6 @@ export default function App() {
   }, [hostAddr])
 
   const triggerMenuButton = () => {
-    // console.log(FileSystem.documentDirectory, "menu function");
     setMenuTrigger(!menuTrigger);
   }
 
@@ -79,8 +84,6 @@ export default function App() {
     } else {
       StopRecording(recording, setRecording, setAudioTrigger, setSpeechCommand);
     }
-    // console.log("audio triggered");
-    // setAudioTrigger(!audioTrigger);
   }
 
   const triggerInsertText = () => {
@@ -110,10 +113,9 @@ export default function App() {
     }
     try {
       const photo = await cameraRef.current.takePictureAsync()
-      // console.log("Take Picture", photo);
-      triggerCameraActive();
       await setCapturedImage(photo.uri);
       await setPreviewVisible(true);
+      setCameraActive(false);
     } catch(err) {
       console.log("Error When Capturing Photo", err)
     }
@@ -199,18 +201,21 @@ export default function App() {
     setText('');
   }
 
-  const triggerExtract = () => {
+  const triggerExtract = (speech_support=false) => {
     if (capturedImage) {
-      ExtractText(capturedImage, setExtractedTextState, setText);
-      console.log("Extract Text");
+      ExtractText(capturedImage, setExtractedTextState, setText, speech_support);
     } else {
-      console.log("Image is empty");
       SynthesisSpeech("Image is empty");
     }
   }
 
   const triggerPing = () => {
     PingHost();
+  }
+
+  const triggerFolderButton = () => {
+    console.log("Folder Clicked");
+    PickImage(setCapturedImage, setPreviewVisible);
   }
 
   return (
@@ -246,7 +251,8 @@ export default function App() {
         AudioState={audioTrigger}
         triggerAudio={trigerAudioButton}
         cameraActiveState={cameraActive}
-        triggerCamera={takePicture} />
+        triggerCamera={takePicture}
+        triggerFolder={triggerFolderButton} />
     </View>
   );
 }

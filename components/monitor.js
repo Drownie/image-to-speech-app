@@ -92,6 +92,12 @@ export function Monitor({windowSize, menuState, menuTrigger, cameraOption, camer
                 updateHost={updateHost}
                 triggerPing={triggerPing}
             />
+            {
+                !cameraActiveState && !previewVisible &&
+                !inserTextOptionState && !informationOptionState &&
+                !settingOptionState &&
+                <Text style={styles.textContainer}>Image to Speech App</Text>
+            }
             {previewVisible ?
             <CameraPreview 
                 photo={capturedImage}
@@ -119,7 +125,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     textContainer: {
-        maxWidth: '80%',
+        width: '80%',
+        maxWidth: 250,
         paddingVertical: 10,
         paddingHorizontal: 25,
         marginTop: '20%',
@@ -130,7 +137,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         flexWrap: 'wrap',
         color: '#FFF',
-        fontSize: 32,
+        fontSize: 25,
     },
     capturedContainer: {
         flex: 1,
