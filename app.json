@@ -4,7 +4,7 @@
     "slug": "simple-ocr-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/new-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -17,11 +17,6 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
-      ], [
-        "expo-screen-orientation",
-        {
-          "initialOrientation": "DEFAULT"
-        }
       ]
     ],
     "assetBundlePatterns": [
@@ -32,15 +27,22 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/new-adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "INTERNET"
-      ]
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.drownie.simpleocrapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4f164ae2-4e8c-44e9-872e-3c9a8e04417c"
+      }
     }
   }
 }

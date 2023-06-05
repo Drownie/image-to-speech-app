@@ -1,8 +1,6 @@
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { Camera } from 'expo-camera';
-import * as ScreenOrientation from 'expo-screen-orientation';
-
 import { ButtonNav } from './components/bottomNav';
 import { Monitor } from './components/monitor';
 

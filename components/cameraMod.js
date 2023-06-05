@@ -2,9 +2,9 @@ import { View, Text, StyleSheet } from "react-native";
 import { Camera, CameraType } from 'expo-camera';
 
 export function CameraMod ({cameraPermission, cameraActiveState, updateCameraRef}) {
-    if (!cameraPermission) {
-        // return <Text style={styles.alertContainer}>No Access To Camera</Text>;
-        return <View />;
+    if (!cameraPermission && cameraActiveState) {
+        return <Text style={styles.alertContainer}>No Access To Camera</Text>;
+        // return <View />;
     }
     if (cameraActiveState & cameraPermission) {
         return (
