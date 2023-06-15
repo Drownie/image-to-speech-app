@@ -118,7 +118,11 @@ const RecontIntentAndroid = async (uri, setCommand) => {
             {headers}
         ).then(response => {
             console.log(response.data);
-            setCommand(response.data.result.name);
+            if (response.data.result.name !== undefined) {
+                setCommand(response.data.result.name);
+            } else {
+                setCommand("other");
+            }
             return;
         }).catch(e => {
             console.log(e);
