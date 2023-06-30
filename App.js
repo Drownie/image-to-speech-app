@@ -59,7 +59,7 @@ export default function App() {
         SynthesisSpeech("Extracting text");
         triggerExtract();
       } else if (speechCommand === "error") {
-        SynthesisSpeech("Error");
+        SynthesisSpeech("Error, Try Again");
       } else {
         console.log("Unknown Command");
         SynthesisSpeech("Unknown Command");
