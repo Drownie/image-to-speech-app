@@ -35,7 +35,7 @@ let BACKEND_ENDPOINT = 'http://192.168.0.184:3000/';
 // 'https://172.16.1.80:3000/'
 // 'http://192.168.162.221:3000/'
 //'http://192.168.0.184:3000/' 
-const headers = {'Content-Type': 'multipart/form-data'};
+const headers = {'content-type': 'multipart/form-data'};
 let KEY = 3;
 
 const UpdateHost = (newHost) => {
@@ -43,13 +43,15 @@ const UpdateHost = (newHost) => {
     return;
 }
 
-const PingHost = () => {
+const PingHost = (updatKey) => {
     try {
         console.log(`Ping @ ${BACKEND_ENDPOINT}`);
         axios.get(
             BACKEND_ENDPOINT + 'key/'
         ).then(result => {
             KEY = result.data.result;
+            // console.log(KEY);
+            updatKey(KEY.toString());
             return;
         }).catch(err => {
             console.log('Error :', err.message);
@@ -104,6 +106,7 @@ const SynthesisSpeech = (text) => {
 }
 
 const RecontIntentAndroid = async (uri, setCommand) => {
+    // console.log("baru masuk recon");
     const formData = new FormData();
     formData.append('file', {
         uri,
@@ -112,25 +115,27 @@ const RecontIntentAndroid = async (uri, setCommand) => {
     })
 
     try {
+        // console.log("mau ngirim request recon")
         axios.post(
             BACKEND_ENDPOINT + 'recon/' + KEY,
             formData,
             {headers}
         ).then(response => {
-            console.log(response.data.result);
+            // console.log(response.data.result);
             if (response.data.result !== undefined) {
                 setCommand(response.data.result.name);
             } else {
                 setCommand("other");
             }
             return;
-        }).catch(e => {
-            console.log(e);
+        }).catch(err => {
+            console.log("Error:", err);
+            console.log(err)
             setCommand("error");
             return;
         })
     } catch(err) {
-        console.log(err);
+        console.log("Error:", err);
         setCommand("error");
         return;
     }
@@ -196,9 +201,10 @@ const StopRecording = async (recording, reset, triggerAudio, setSpeechCommand) =
     reset(undefined);
 
     if (Platform.OS === "android") {
-        RecontIntentAndroid(uri, setSpeechCommand);
+        // console.log("sebelum recon");
+        await RecontIntentAndroid(uri, setSpeechCommand);
     } else if (Platform.OS === "web") {
-        ReconIntentWeb(uri, setSpeechCommand);
+        await ReconIntentWeb(uri, setSpeechCommand);
     }
     return;
 }

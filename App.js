@@ -1,6 +1,7 @@
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { Camera } from 'expo-camera';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ButtonNav } from './components/bottomNav';
 import { Monitor } from './components/monitor';
 
@@ -23,6 +24,7 @@ export default function App() {
   const [settingState, setSettingState] = useState(false);
   const [speechCommand, setSpeechCommand] = useState(null);
   const [hostAddr, setHostAddr] = useState('http://192.168.0.184:3000/');
+  const [appKey, setAppKey] = useState('3');
 
   useEffect(() => {
     Camera.requestCameraPermissionsAsync()
@@ -32,10 +34,10 @@ export default function App() {
     let curSize = Dimensions.get('window').width;
     if (curSize != windowSize){
       setWindowSize(curSize);
-    }
-    UpdateHost(hostAddr);
-    PingHost();
-  }, [])
+    };
+
+    GetHostData();
+  }, []);
 
   useEffect(() => {
     if (speechCommand !== null) {
@@ -50,12 +52,12 @@ export default function App() {
           SynthesisSpeech("No Camera Permission");
         }
       } else if (speechCommand === "cancel") {
+        SynthesisSpeech("Canceling Operation");
         cancelCapturedPict();
       } else if (speechCommand === "convert_to_speech") {
-        console.log("Transoforming text");
+        SynthesisSpeech("Transoforming text");
         transformText();
       } else if (speechCommand === "extract_text") {
-        console.log("Extracting text");
         SynthesisSpeech("Extracting text");
         triggerExtract();
       } else if (speechCommand === "error") {
@@ -69,8 +71,38 @@ export default function App() {
   }, [speechCommand])
 
   useEffect(() => {
+    StoreHostAddress(hostAddr)
     UpdateHost(hostAddr);
   }, [hostAddr])
+
+  const StoreHostAddress = async (newAddr) => {
+    console.log("Storing");
+    try {
+      await AsyncStorage.setItem('hostKey', newAddr);
+      console.log("Finish storing");
+      return true;
+    } catch(err) {
+      console.log("Error: Store Host Error");
+      console.log(err);
+      return false;
+    }
+  };
+
+  const GetHostData = async () => {
+    console.log("Loading host")
+    try {
+      const storedHost = await AsyncStorage.getItem('hostKey');
+      if (storedHost !== null) {
+        console.log(storedHost);
+        UpdateHost(storedHost);
+        setHostAddr(storedHost);
+      }
+      PingHost(setAppKey);
+    } catch(err) {
+      console.log("Error: Load Host Error");
+      console.log(err);
+    }
+  };
 
   const triggerMenuButton = () => {
     setMenuTrigger(!menuTrigger);
@@ -208,7 +240,7 @@ export default function App() {
   }
 
   const triggerPing = () => {
-    PingHost();
+    PingHost(setAppKey);
   }
 
   const triggerFolderButton = () => {
@@ -242,7 +274,8 @@ export default function App() {
         transformText={transformText}
         hostAddr={hostAddr}
         updateHost={setHostAddr}
-        triggerPing={triggerPing} />
+        triggerPing={triggerPing}
+        appKey={appKey} />
       <ButtonNav 
         trigger={triggerMenuButton} 
         triggerStats={menuTrigger}

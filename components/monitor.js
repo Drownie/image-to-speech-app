@@ -9,7 +9,7 @@ import { Information } from "./information";
 import { CameraMod } from "./cameraMod";
 import { Setting } from "./setting";
 
-export function Monitor({windowSize, menuState, menuTrigger, cameraOption, cameraActiveState, insertTextOption, inserTextOptionState, textValue, updateText, transformText, informationOption, informationOptionState, cameraRef, cameraPermission, previewVisible, capturedImage, triggerExtract, cancelCapturedPict, settingOption, settingOptionState, updateHost, hostAddr, triggerPing, extractedTextState}) {    
+export function Monitor({windowSize, menuState, menuTrigger, cameraOption, cameraActiveState, insertTextOption, inserTextOptionState, textValue, updateText, transformText, informationOption, informationOptionState, cameraRef, cameraPermission, previewVisible, capturedImage, triggerExtract, cancelCapturedPict, settingOption, settingOptionState, updateHost, hostAddr, triggerPing, appKey, extractedTextState}) {    
     const CameraPreview = ({photo, cancelPict, extract, extractedTextState, textValue, transformText}) => {
         return (
             <View style={styles.capturedContainer}>
@@ -91,6 +91,7 @@ export function Monitor({windowSize, menuState, menuTrigger, cameraOption, camer
                 hostAddr={hostAddr}
                 updateHost={updateHost}
                 triggerPing={triggerPing}
+                appKey={appKey}
             />
             {
                 !cameraActiveState && !previewVisible &&

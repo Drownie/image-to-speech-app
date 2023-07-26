@@ -23,7 +23,7 @@ export function Information({closeModal, modalOpened}) {
             </View>
             <View style={styles.content}>
                 <Text style={styles.contentText}>The Image-to-Speech app was developed specifically to aid individuals with visual impairments. The application was created as part of a thesis project and designed by Abraham Mahanaim CSE19.</Text>
-                <Text style={styles.appVersion}>Ver 1.0</Text>
+                <Text style={styles.appVersion}>Ver 1.0.3</Text>
             </View>
         </View>
     );

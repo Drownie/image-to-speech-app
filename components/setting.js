@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather";
 
-export function Setting({closeModal, modalOpened, hostAddr, updateHost, triggerPing}) {
+export function Setting({closeModal, modalOpened, hostAddr, updateHost, triggerPing, appKey}) {
 
     return (
         <View style={styles.container(modalOpened)}>
@@ -38,6 +38,15 @@ export function Setting({closeModal, modalOpened, hostAddr, updateHost, triggerP
                         placeholder="Insert Host..."
                         onChangeText={updateHost}
                         value={hostAddr}
+                    />
+                </View>
+                <View style={styles.contentRow}>
+                    <Text style={styles.textLabel}>Key</Text>
+                    <TextInput 
+                        style={styles.textInput}
+                        placeholder="application key here"
+                        editable={false}
+                        value={appKey}
                     />
                 </View>
             </View>
@@ -122,6 +131,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         borderRadius: 25,
         paddingHorizontal: 15,
+        paddingLeft: 20,
         fontSize: 15,
     }
 });
