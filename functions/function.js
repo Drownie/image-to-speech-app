@@ -113,7 +113,7 @@ const RecontIntentAndroid = async (uri, setCommand) => {
         name: 'audio.m4a',
         type: 'audio/mp4'
     })
-
+    console.log(formData);
     try {
         // console.log("mau ngirim request recon")
         axios.post(

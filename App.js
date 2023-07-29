@@ -46,6 +46,7 @@ export default function App() {
           triggerCameraActive();
 
           setTimeout(() => {
+            // console.log("Taking Picture");
             takePicture();
           }, 3000);
         } else {
